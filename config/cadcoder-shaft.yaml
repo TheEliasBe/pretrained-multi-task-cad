@@ -1,0 +1,102 @@
+# Configuration for DeepSeek Coder fine-tuning on Shaft dataset
+# Data: ./data/shaft/python (Python files) + ./data/shaft/prompts/prompts.csv
+general:
+  model: "cadcoder-deepseek"
+
+
+training:
+  max_epochs: 3
+  batch_size: 2
+  device: "cuda"
+  checkpoint_freq: 10
+  checkpoint: null
+  profiler: false
+  use_system_prompt: false
+  patience: 100
+  checkpointing: true
+
+
+# Model configuration
+cadcoder:
+  model_name: "deepseek-ai/deepseek-coder-1.3b-instruct"  # or "deepseek-ai/deepseek-coder-1.3b-instruct" for testing
+  
+  # LoRA configuration for efficient fine-tuning
+  use_lora: true
+  lora_r: 16  # Rank of LoRA matrices
+  lora_alpha: 32  # Scaling factor
+  lora_dropout: 0.05
+  lora_target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+  
+  # Generation settings (for validation)
+  use_bos_token: true
+
+# Data configuration
+data:
+  root_dir: "./data/shaft"  # Base directory with prompts/ and python/ subdirectories
+  dataset_size: null  # null for all data, or specify a number for testing
+  max_total_len: 4096  # Maximum sequence length (prompt + partial + completion)
+  partial_ratio: 0.5  # How much of the code to use as partial (0.0 to 1.0)
+  seed: 42
+  num_workers: 0  # Set to 0 when using pre-tokenized data to avoid overhead
+  
+  # Data split ratios (dataset will be automatically split)
+  train_ratio: 0.8
+  val_ratio: 0.1
+  # test_ratio is automatically calculated as 1 - train - val
+
+optimizer:
+  optimizer: "Adam"
+  learning_rate: 0.0001
+  weigth_decay: 0
+  scheduler: null
+  step_size: 40
+  gamma: 0.5
+  gradient_clip_val: 1
+  gradient_checkpointing: false
+  accumulate_grad_batches: 1
+
+# Inference configuration
+inference:
+  max_new_tokens: 1024
+  temperature: 0.2
+  top_k: 10
+  top_p: 0.9
+
+loss:
+  weight_decay: 1e-4
+  label_smoothing: 0.075
+  use_alignment_loss: false
+  alignment_loss_weight: 1
+
+# Callbacks
+early_stopping:
+  enabled: true
+  patience: 3
+  monitor: "val/loss"
+  mode: "min"
+
+checkpoint:
+  enabled: true
+  monitor: "val/loss"
+  mode: "min"
+  save_top_k: 3
+  save_last: true
+
+logging:
+  log_one_sample: true
+  log_alignment: false
+  log_attention_scores: false
+
+# Sample logging during training (disable for faster training)
+log_training_samples: false  # Set to true to log generated samples during training
+log_sample_interval: 500  # Only log samples every N steps (if enabled)
+
+# Development
+fast_dev_run: false  # Set to true for quick testing

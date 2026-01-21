@@ -1,0 +1,59 @@
+general:
+  model: "cadcoder-brep"
+  mode: "train" # "train" or "inference"
+encoder:
+  n_encoder_layer: 4
+  freeze_encoder_epoch: 100
+decoder:
+  use_prefix_mask: 100
+  dim_latent: 256 # Dimension for graph encoder output
+  dim_model: 4096
+cadcoder:
+  attn_implementation: "sdpa"
+  # Memory optimization parameters
+  num_virtual_tokens: 12
+  use_lora: true
+  lora_r: 64
+  model_name: "deepseek-ai/deepseek-coder-7b-instruct-v1.5"
+  quantization: false
+  use_bos_token: false
+optimizer:
+  optimizer: "Adam"
+  learning_rate: 0.0001
+  weigth_decay: 0
+  scheduler: null
+  step_size: 40
+  gamma: 0.5
+  gradient_clip_val: 1
+  gradient_checkpointing: false
+  accumulate_grad_batches: 1
+training:
+  max_epochs: 75
+  batch_size: 1
+  device: "cuda"
+  checkpoint_freq: 1
+  checkpoint: null # "model-zesty-wildflower-597.ckpt"
+  profiler: false
+  use_system_prompt: false
+  patience: 100
+  checkpointing: true
+deepspeed:
+  multi_gpu: false
+  zero_stage: 1
+inference:
+  max_new_tokens: 512
+loss:
+  weight_decay: 1e-4
+  label_smoothing: 0.075
+  use_alignment_loss: true
+  alignment_loss_weight: 1
+data:
+  dataset_size: 100
+  max_total_len: 1024
+  min_total_len: 0
+logging:
+  log_one_sample: true
+  log_alignment: false
+  log_attention_scores: false
+memory:
+  empty_cache_freq: 2

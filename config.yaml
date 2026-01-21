@@ -1,0 +1,17 @@
+# the default config file for global settings
+logging:
+  logger: "wandb"
+  logger_mode: "disabled"
+  logger_tag: "debug"
+
+general:
+  fast_dev_run: false
+
+text2cad:
+  max_tokens: 1024
+data:
+  max_total_len: 1024
+decoder:
+  use_prefix_mask: 100
+  dim_latent: 256 # Dimension for graph encoder output
+  dim_model: 2048
